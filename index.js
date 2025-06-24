@@ -24,26 +24,49 @@ app.post('/submit', (req, res) => {
   const { name, phone, email } = req.body;
   const time = new Date().toISOString();
   const log = `${time} | Заявка: ${name}, ${phone}, ${email}\n`;
-
   fs.appendFileSync('logs.txt', log);
   console.log(log);
   res.send('<h2>Спасибо! Заявка отправлена.</h2>');
 });
 
+app.get('/admin', (req, res) => {
+  const key = req.query.key;
+  if (key !== 'qwerty123') return res.status(403).send('Доступ запрещён');
+
+  const rawLogs = fs.readFileSync('logs.txt', 'utf-8');
+  const lines = rawLogs.trim().split('\n');
+
+  let tableRows = lines.map(line => {
+    return '<tr><td>' + line.replace(/ \| /g, '</td><td>') + '</td></tr>';
+  }).join('\n');
+
+  const html = `
+    <!DOCTYPE html>
+    <html lang="ru">
+    <head>
+      <meta charset="UTF-8">
+      <title>Логи</title>
+      <style>
+        body { font-family: sans-serif; padding: 20px; background: #f9f9f9; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { padding: 10px; border: 1px solid #ccc; text-align: left; }
+        th { background: #e60000; color: white; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+      </style>
+    </head>
+    <body>
+      <h2>🛡️ Логи переходов и заявок</h2>
+      <table>
+        <tr><th>Время</th><th>ID/ФИО</th><th>IP</th><th>UA / Контакт</th></tr>
+        ${tableRows}
+      </table>
+    </body>
+    </html>
+  `;
+
+  res.send(html);
+});
+
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
-
-app.get('/admin', (req, res) => {
-  const key = req.query.key;
-  if (key !== 'qwerty123') {
-    return res.status(403).send('Доступ запрещён');
-  }
-
-  const logs = fs.readFileSync('logs.txt', 'utf-8');
-  res.send(`
-    <h2>🛡️ Логи переходов и заявок</h2>
-    <pre>${logs}</pre>
-  `);
-});
-
