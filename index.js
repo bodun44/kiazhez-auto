@@ -22,12 +22,17 @@ app.get('/log', (req, res) => {
 
 app.post('/submit', (req, res) => {
   const { name, phone, email } = req.body;
+  const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+  const ua = req.headers['user-agent'];
   const time = new Date().toISOString();
-  const log = `${time} | Заявка: ${name}, ${phone}, ${email}\n`;
+
+  const log = `${time} | Заявка: ${name}, ${phone}, ${email} | IP: ${ip} | UA: ${ua}\n`;
   fs.appendFileSync('logs.txt', log);
   console.log(log);
+
   res.send('<h2>Спасибо! Заявка отправлена.</h2>');
 });
+
 
 app.get('/admin', (req, res) => {
   const key = req.query.key;
