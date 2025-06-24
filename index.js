@@ -30,7 +30,7 @@ app.post('/submit', (req, res) => {
   fs.appendFileSync('logs.txt', log);
   console.log(log);
 
-  res.send('<h2>Спасибо! Заявка отправлена.</h2>');
+  res.send('<h2>Спасибо! В ближайшее время с вами свяжутся наши менеджеры.</h2>');
 });
 
 
