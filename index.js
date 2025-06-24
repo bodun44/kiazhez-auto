@@ -16,6 +16,7 @@ app.get('/log', (req, res) => {
 
   const log = `${time} | ID: ${id} | IP: ${ip} | UA: ${ua}\n`;
   fs.appendFileSync('logs.txt', log);
+  console.log(log);
   res.sendFile(__dirname + '/public/index.html');
 });
 
@@ -25,9 +26,24 @@ app.post('/submit', (req, res) => {
   const log = `${time} | Заявка: ${name}, ${phone}, ${email}\n`;
 
   fs.appendFileSync('logs.txt', log);
+  console.log(log);
   res.send('<h2>Спасибо! Заявка отправлена.</h2>');
 });
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
+
+app.get('/admin', (req, res) => {
+  const key = req.query.key;
+  if (key !== 'qwerty123') {
+    return res.status(403).send('Доступ запрещён');
+  }
+
+  const logs = fs.readFileSync('logs.txt', 'utf-8');
+  res.send(`
+    <h2>🛡️ Логи переходов и заявок</h2>
+    <pre>${logs}</pre>
+  `);
+});
+
