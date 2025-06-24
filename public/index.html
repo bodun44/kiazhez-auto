@@ -7,15 +7,17 @@
   <style>
  body {
   font-family: 'Roboto', sans-serif;
-  background: url('/bg.png') center center no-repeat;
+  background-image: url('/bg.png');
+  background-repeat: no-repeat;
   background-size: cover;
+  background-position: center center;
   background-attachment: fixed;
-  background-position: center;
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
   margin: 0;
+  overflow: hidden; /* ← важное ограничение */
 }
     .container {
   background-color: rgba(255, 255, 255, 0.9); /* ← почти белый, но просвечивает фон */
